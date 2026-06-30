@@ -1,0 +1,13 @@
+SELECT PATCH_IDENTIFIER, CASE ifnull(PATCH_STATUS.STATUS,'') WHEN 0 
+THEN 'Active' WHEN 1 THEN 'Inactive' WHEN 4 
+THEN 'Disabled' 
+ELSE 'Unknown' END AS PP_STATUS, TITLE, CREATION_DATE, SEVERITY,*
+
+
+FROM KBSYS.PATCH  LEFT JOIN PATCH_STATUS ON PATCH_STATUS.PATCH_ID = PATCH.ID 
+
+
+WHERE ((SEVERITY like 'Critical%') AND (date(CREATION_DATE) >= date_sub(curdate(), interval dayofweek(curdate()) - 1 + (7*2)  day)  and date(CREATION_DATE) < date_add(curdate(), interval dayofweek(curdate()) - 1 day) )) 
+
+
+ ORDER BY SEVERITY, PP_STATUS, CREATION_DATE
